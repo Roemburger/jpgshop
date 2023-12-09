@@ -11,6 +11,10 @@ public class ProductDAO {
 
     ProductRepository productRepository;
 
+    public ProductDAO(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
     public List<Product> getAllProducts() {
         return this.productRepository.findAll();
     }

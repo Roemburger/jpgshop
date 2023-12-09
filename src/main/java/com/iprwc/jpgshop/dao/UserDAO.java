@@ -1,5 +1,6 @@
 package com.iprwc.jpgshop.dao;
 
+import com.iprwc.jpgshop.config.JwtToken;
 import com.iprwc.jpgshop.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -9,9 +10,11 @@ import java.util.Optional;
 public class UserDAO {
 
     private final UserRepository userRepository;
+    private final JwtToken jwtToken;
 
-    public UserDAO(UserRepository userRepository) {
+    public UserDAO(UserRepository userRepository, JwtToken jwtToken) {
         this.userRepository = userRepository;
+        this.jwtToken = jwtToken;
     }
 
     public Optional<User> findByEmail(String email) {
@@ -22,7 +25,9 @@ public class UserDAO {
         return this.userRepository.save(user);
     }
 
-    public Optional<User> findUsernameById(long id) {
-        return this.userRepository.findById(id);
+    public User findUserByJwtToken(String token) {
+        String username = jwtToken.findUserNameFromJwtToken(token);
+        return this.userRepository.findByUsername(username);
     }
 }
+

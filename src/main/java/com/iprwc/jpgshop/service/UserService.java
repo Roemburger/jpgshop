@@ -32,4 +32,9 @@ public class UserService implements UserDetailsService {
                 email, user.getPassword(), Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
         );
     }
+
+    public User findUserByToken(String token) {
+        return this.userDAO.findUserByJwtToken(token);
+    }
+
 }
