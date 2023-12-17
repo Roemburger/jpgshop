@@ -3,9 +3,7 @@ package com.iprwc.jpgshop.controller;
 import com.iprwc.jpgshop.config.JwtToken;
 import com.iprwc.jpgshop.dao.UserDAO;
 import com.iprwc.jpgshop.entity.LoginCredentials;
-import com.iprwc.jpgshop.entity.Role;
 import com.iprwc.jpgshop.entity.User;
-import com.iprwc.jpgshop.service.RoleService;
 import org.passay.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,14 +23,12 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final UserDAO userDAO;
     private final JwtToken jwtToken;
-    private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
 
-    public UserController(PasswordEncoder passwordEncoder, UserDAO userDAO, JwtToken jwtToken, RoleService roleService, AuthenticationManager authenticationManager) {
+    public UserController(PasswordEncoder passwordEncoder, UserDAO userDAO, JwtToken jwtToken, AuthenticationManager authenticationManager) {
         this.passwordEncoder = passwordEncoder;
         this.userDAO = userDAO;
         this.jwtToken = jwtToken;
-        this.roleService = roleService;
         this.authenticationManager = authenticationManager;
     }
 
@@ -52,10 +48,6 @@ public class UserController {
         }
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-
-        Set<Role> roles = new HashSet<>();
-        roles.add(roleService.setUserRole());
-        user.setRoles(roles);
 
         user = userDAO.save(user);
         String token = jwtToken.genToken(user.getEmail());

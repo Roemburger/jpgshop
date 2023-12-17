@@ -24,7 +24,7 @@ public class UserService implements UserDetailsService {
         Optional<User> requestedUser = userDAO.findByEmail(email);
 
         if (requestedUser.isEmpty()) {
-            throw new UsernameNotFoundException("No user found");
+            throw new UsernameNotFoundException("Unknown email address");
         }
 
         User user = requestedUser.get();

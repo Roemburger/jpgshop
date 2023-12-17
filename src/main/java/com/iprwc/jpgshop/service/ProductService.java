@@ -19,6 +19,7 @@ public class ProductService {
     }
 
     public void createProduct(Product product) {
+        product.setQuantity(25);
         productDAO.createProduct(product);
     }
 }
