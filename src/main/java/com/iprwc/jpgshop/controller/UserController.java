@@ -48,6 +48,7 @@ public class UserController {
         }
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
+        user.setDebits(0.0);
 
         user = userDAO.save(user);
         String token = jwtToken.genToken(user.getEmail());

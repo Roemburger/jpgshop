@@ -32,12 +32,18 @@ public class User {
     @Setter
     private boolean isAdmin;
 
+    @Column(nullable = false)
+    @Getter
+    @Setter
+    private double debits = 0.0;
+
     public User() {}
 
-    public User(String username, String email, String password, boolean isAdmin) {
+    public User(String username, String email, String password, boolean isAdmin, double debits) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.isAdmin = isAdmin;
+        this.debits = debits;
     }
 }
