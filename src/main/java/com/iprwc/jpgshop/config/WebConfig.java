@@ -35,7 +35,7 @@ public class WebConfig {
                             "/api/auth/login",
                             "/api/products/getProducts",
                             "/api/products/createItem",
-                            "/api/cart/createOrder"
+                            "/api/order/createOrder"
                     ).permitAll();
                 })
                 .httpBasic(withDefaults());

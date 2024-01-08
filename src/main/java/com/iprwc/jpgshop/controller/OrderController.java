@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/cart")
+@RequestMapping("/api/order")
 public class OrderController {
     private final JwtFilter jwtFilter;
     private final UserService userService;
@@ -28,7 +28,7 @@ public class OrderController {
     public void createOrder(HttpServletRequest request, @RequestBody double newDebits) {
         try {
             String token = jwtFilter.parseJwt(request);
-            if (jwtToken.verifyTokenAndGetClaim(token) != null) {
+            if (token != null && jwtToken.verifyJwtToken(token)) {
                 User user = userService.findUserByToken(token);
                 orderService.createOrder(user, newDebits);
             }

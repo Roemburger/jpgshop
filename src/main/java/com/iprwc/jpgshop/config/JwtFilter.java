@@ -1,6 +1,5 @@
 package com.iprwc.jpgshop.config;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.iprwc.jpgshop.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -27,28 +27,19 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, ServletException {
-        String header = request.getHeader("Auth");
-        if (header != null && !header.isBlank() && header.startsWith("Bearer ")) {
-            String jwt = header.substring(7);
-            if (jwt.isBlank()) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT token in bearer header is invalid");
-                return;
-            } else {
-                try {
-                    String email = jwtToken.verifyTokenAndGetClaim(jwt);
-                    UserDetails userDetails = userService.loadUserByUsername(email);
-                    UsernamePasswordAuthenticationToken upaToken = new UsernamePasswordAuthenticationToken(email, userDetails.getPassword(), userDetails.getAuthorities());
-
-                    if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                        SecurityContextHolder.getContext().setAuthentication(upaToken);
-                    }
-                } catch (JWTVerificationException exception) {
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
-                    return;
-                }
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        try {
+            String token = parseJwt(request);
+            if (token != null && jwtToken.verifyJwtToken(token)) {
+                String email = jwtToken.findUserNameFromJwtToken(token);
+                UserDetails userDetails = userService.loadUserByUsername(email);
+                UsernamePasswordAuthenticationToken upaToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                upaToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(upaToken);
             }
+        } catch (Exception ignored) {
         }
+
         filterChain.doFilter(request, response);
     }
 

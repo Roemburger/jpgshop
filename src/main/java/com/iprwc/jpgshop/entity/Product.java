@@ -20,10 +20,6 @@ public class Product {
 
     @Getter
     @Setter
-    private String description;
-
-    @Getter
-    @Setter
     private Double price;
 
     @Getter

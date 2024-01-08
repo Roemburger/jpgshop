@@ -5,6 +5,7 @@ import com.iprwc.jpgshop.dao.UserDAO;
 import com.iprwc.jpgshop.entity.LoginCredentials;
 import com.iprwc.jpgshop.entity.User;
 import org.passay.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -75,7 +76,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginCredentials credentials) {
+    public ResponseEntity<?> login(@RequestBody LoginCredentials credentials) {
         try {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(credentials.email, credentials.password);
             authenticationManager.authenticate(authToken);
@@ -83,6 +84,12 @@ public class UserController {
 
             Optional<User> user = userDAO.findByEmail(credentials.email);
             user.ifPresent(userDAO::save);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("token", token);
+
+            return ResponseEntity.ok(response);
+
         } catch (AuthenticationException exception) {
             throw new RuntimeException("Login credentials are invalid.");
         }
