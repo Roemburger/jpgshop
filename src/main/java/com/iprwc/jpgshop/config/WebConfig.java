@@ -15,6 +15,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 
@@ -22,7 +24,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
-public class WebConfig {
+public class WebConfig implements WebMvcConfigurer {
 
     private final JwtFilter filter;
 
@@ -43,6 +45,7 @@ public class WebConfig {
                             "/api/products/createProduct",
                             "/api/order/createOrder"
                     ).permitAll();
+                    request.anyRequest().authenticated();
                 })
                 .httpBasic(withDefaults());
         return http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class).build();
@@ -71,4 +74,8 @@ public class WebConfig {
         return source;
     }
 
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**");
+    }
 }
