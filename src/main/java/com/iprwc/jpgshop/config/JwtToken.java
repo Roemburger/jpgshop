@@ -1,8 +1,11 @@
 package com.iprwc.jpgshop.config;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,7 +21,7 @@ public class JwtToken {
 
     public String genToken(String email) throws IllegalArgumentException, JWTCreationException {
         return JWT.create()
-                .withSubject("User")
+                .withSubject("User Details")
                 .withClaim("email", email)
                 .withIssuer("jpgshop")
                 .withIssuedAt(new Date())
@@ -34,12 +37,19 @@ public class JwtToken {
         return calendarDate.getTime();
     }
 
-    public String findUserNameFromJwtToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+    public String findUserNameFromJwtToken(String token) throws JWTVerificationException {
+        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(secret))
+                .withSubject("User Details")
+                .withIssuer("jpgshop")
+                .build();
+        DecodedJWT jwt = jwtVerifier.verify(token);
+        return jwt.getClaim("email").asString();
+
+        //        return Jwts.parser()
+//                .setSigningKey(secret)
+//                .parseClaimsJws(token)
+//                .getBody()
+//                .getSubject();
     }
 
     public boolean verifyJwtToken(String token) {

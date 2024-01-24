@@ -4,6 +4,7 @@ import com.iprwc.jpgshop.entity.Product;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ProductDAO {
@@ -20,5 +21,17 @@ public class ProductDAO {
 
     public void createProduct(Product product) {
         productRepository.save(product);
+    }
+
+    public Optional<Product> getProductById(Long productId) {
+        return this.productRepository.findById(productId);
+    }
+
+    public void updateProduct(Product product) {
+        productRepository.save(product);
+    }
+
+    public void deleteProductById(Long productId) {
+        productRepository.deleteById(productId);
     }
 }

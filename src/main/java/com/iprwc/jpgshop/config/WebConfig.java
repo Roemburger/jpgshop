@@ -1,5 +1,6 @@
 package com.iprwc.jpgshop.config;
 
+import com.iprwc.jpgshop.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,9 +24,11 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class WebConfig implements WebMvcConfigurer {
 
     private final JwtFilter filter;
+    private final UserService userService;
 
-    public WebConfig(JwtFilter filter) {
+    public WebConfig(JwtFilter filter, UserService userService) {
         this.filter = filter;
+        this.userService = userService;
     }
 
     @Bean
@@ -38,18 +42,22 @@ public class WebConfig implements WebMvcConfigurer {
                             "/api/auth/login",
                             "/api/products/getProducts",
                             "/api/products/createProduct",
+                            "/api/products/updateProduct",
+                            "/api/products/deleteProduct",
                             "/api/order/createOrder"
                     ).permitAll();
                     request.anyRequest().authenticated();
                 })
-                .httpBasic(withDefaults());
+                .userDetailsService(userService)
+                .httpBasic(withDefaults())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class).build();
     }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:4200", "http://51.38.114.113")
+                .allowedOrigins("http://localhost:4200", "http://51.38.114.113:8080")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("Authorization", "Content-Type")
                 .allowCredentials(true);
