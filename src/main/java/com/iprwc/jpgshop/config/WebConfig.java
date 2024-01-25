@@ -35,6 +35,7 @@ public class WebConfig implements WebMvcConfigurer {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers(
@@ -49,7 +50,6 @@ public class WebConfig implements WebMvcConfigurer {
                     request.anyRequest().authenticated();
                 })
                 .userDetailsService(userService)
-                .httpBasic(withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class).build();
     }
