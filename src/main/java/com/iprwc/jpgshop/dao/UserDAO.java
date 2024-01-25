@@ -25,9 +25,9 @@ public class UserDAO {
         return this.userRepository.save(user);
     }
 
-    public User findUserByJwtToken(String token) {
-        String username = jwtToken.findUserNameFromJwtToken(token);
-        return this.userRepository.findByUsername(username);
+    public Optional<User> findUserByJwtToken(String token) {
+        String email = jwtToken.findUserNameFromJwtToken(token);
+        return this.userRepository.findByEmail(email);
     }
 }
 

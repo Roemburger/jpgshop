@@ -34,7 +34,12 @@ public class UserService implements UserDetailsService {
     }
 
     public User findUserByToken(String token) {
-        return this.userDAO.findUserByJwtToken(token);
+        Optional<User> user = this.userDAO.findUserByJwtToken(token);
+        if (user.isPresent()) {
+            return user.get();
+        } else {
+            return null;
+        }
     }
 
 }

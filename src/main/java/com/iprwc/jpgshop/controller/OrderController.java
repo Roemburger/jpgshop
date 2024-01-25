@@ -9,7 +9,7 @@ import com.iprwc.jpgshop.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:4200", "http://51.38.114.113"})
 @RestController
 @RequestMapping("/api/order")
 public class OrderController {
@@ -34,6 +34,7 @@ public class OrderController {
                 orderService.createOrder(user, order);
             }
         } catch (Exception ignored) {
+            throw new RuntimeException("Error: could not create order.");
         }
     }
 }
